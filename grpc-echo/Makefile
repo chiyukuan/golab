@@ -1,6 +1,7 @@
 # makefile for echo service
 
-export GO111MODULE=on
+#export GO111MODULE=on
+#CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 
 .PHONY: vendor
 vendor:
@@ -12,6 +13,15 @@ pb:
 
 build:
 	@go build -o bin/grpc-echo main/*.go
+
+docker_build:
+	@docker build -f package/docker/Dockerfile.grpc-echo -t quay.io/raykuan/grpc-echo .
+
+docker_cp:
+	@docker create -ti --name dummy quay.io/raykuan/grpc-echo /bin/sh
+	@docker cp dummy:/data/go.mod .
+	@docker cp dummy:/data/go.sum .
+	@docker rm -fv dummy
 
 server: build
 	bin/grpc-echo -mode s

@@ -1,0 +1,38 @@
+FROM quay.io/raykuan/gobuilder as builder
+
+RUN mkdir /app
+RUN mkdir /data
+WORKDIR /app
+
+# Let's cache modules retrieval - those don't change so often
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
+COPY . ./
+
+# GO111MODULE=on
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 make pb build
+COPY go.mod /data
+COPY go.sum /data
+
+# FROM scratch
+FROM alpine:latest
+
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/testing/ >> /etc/apk/repositories
+
+COPY --chown=0:0 --from=builder /app/bin/grpc-echo /app/
+RUN chmod +x /app/*
+
+COPY --chown=65534:0 --from=builder /data /data
+#USER root
+USER 65534
+WORKDIR /data
+
+
+# Expose port 80/443 to the outside world
+# EXPOSE 80
+# EXPOSE 443
+
+# Command to run the executable
+CMD ["/app/grpc-echo", "-mode", "s"]
