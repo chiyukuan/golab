@@ -34,5 +34,5 @@ WORKDIR /data
 # EXPOSE 80
 # EXPOSE 443
 
-# Command to run the executable
-CMD ["/app/grpc-echo", "-mode", "s"]
+# Command to run the executable, 
+CMD ["/app/grpc-echo", "-mode", "s", "-ports", "35001"]

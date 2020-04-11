@@ -14,14 +14,20 @@ pb:
 build:
 	@go build -o bin/grpc-echo main/*.go
 
-docker_build:
+docker-build:
 	@docker build -f package/docker/Dockerfile.grpc-echo -t quay.io/raykuan/grpc-echo .
 
-docker_cp:
+docker-cp:
 	@docker create -ti --name dummy quay.io/raykuan/grpc-echo /bin/sh
 	@docker cp dummy:/data/go.mod .
 	@docker cp dummy:/data/go.sum .
 	@docker rm -fv dummy
+
+docker-server-1:
+	@docker run --rm -it -p 127.0.0.1:5001:35001/tcp quay.io/raykuan/grpc-echo /app/grpc-echo -mode s -ports 35001
+
+docker-server-2:
+	@docker run --rm -it -p 127.0.0.1:5002:35001/tcp quay.io/raykuan/grpc-echo /app/grpc-echo -mode s -ports 35001
 
 server: build
 	bin/grpc-echo -mode s
