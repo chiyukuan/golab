@@ -1,0 +1,38 @@
+/// @par Description:
+/// The Description of this file.
+/// @par Copyright: 
+/// Copyright (c) by Aruba Networks.
+/// 
+/// ALL RIGHTS RESERVED. These coded instructions and program statements are
+/// copyrighted works and confidential proprietary information of ScaleFlux, Inc.
+/// They may not be modified, copied, reproduced, distributed, or disclosed to
+/// third parties in any manner, medium, or form, in whole or in part.
+/// 
+syntax = "proto3";
+
+package greet;
+option go_package="greetpb";
+
+message Greeting {
+    string first_name = 1;
+    string last_name = 2;
+}
+
+message GreetRequest {
+    Greeting greeting = 1;
+}
+
+message GreetResponse {
+    string result = 1;
+}
+
+service GreetService {
+    // unary
+    rpc Greet(GreetRequest) returns (GreetResponse) {};
+    // server streaming
+    rpc GreetN(GreetRequest) returns (stream GreetResponse) {};
+    // client streaming
+    rpc LGreet(stream GreetRequest) returns (GreetResponse) {};
+    // bi-dir streaming
+    rpc LGreetN(stream GreetRequest) returns (stream GreetResponse) {};
+}
